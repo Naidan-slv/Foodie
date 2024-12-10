@@ -5,9 +5,9 @@ from datetime import datetime
 class User(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    username = db.Column(db.String(50), unique=True, nullable=False)
-    email = db.Column(db.String(100), unique=True, nullable=False)
-    password_hash = db.Column(db.String(255), nullable=False)
+    username = db.Column(db.String(50), nullable=False)
+    email = db.Column(db.String(100), nullable=False)
+    password_hash = db.Column(db.String(255))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     # Relationship to Recipes
@@ -33,6 +33,7 @@ class Recipe(db.Model):
     # Relationships to Likes and Saved Recipes
     likes = db.relationship('Like', back_populates='recipe', cascade="all, delete-orphan")
     saved_by = db.relationship('SavedRecipe', back_populates='recipe', cascade="all, delete-orphan")
+    
 
 # Like Model
 class Like(db.Model):
