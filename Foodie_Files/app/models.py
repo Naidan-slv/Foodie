@@ -9,6 +9,9 @@ class User(db.Model):
     email = db.Column(db.String(100), nullable=False)
     password_hash = db.Column(db.String(255))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __str__(self):
+        return f"{self.username} (ID: {self.id})"
     
     # Relationship to Recipes
     recipes = db.relationship('Recipe', back_populates='author', cascade="all, delete-orphan")
@@ -18,7 +21,13 @@ class User(db.Model):
 # Recipe Model
 class Recipe(db.Model):
     __tablename__ = 'recipes'
+
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+
+    # Foreign Key and Relationship to User
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    author = db.relationship('User', back_populates='recipes')
+    
     title = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=False)
     ingredients = db.Column(db.Text, nullable=False)
@@ -26,9 +35,6 @@ class Recipe(db.Model):
     image_url = db.Column(db.String(255))  # Optional, we can set a default picture if anythign 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
-    # Foreign Key and Relationship to User
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    author = db.relationship('User', back_populates='recipes')
     
     # Relationships to Likes and Saved Recipes
     likes = db.relationship('Like', back_populates='recipe', cascade="all, delete-orphan")
