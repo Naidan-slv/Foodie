@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Add New Recipe{% endblock %}
+
+{% block content %}
+<h1>Add a New Recipe</h1>
+<form method="POST" action="/add_recipe" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+    <div>
+        {{ form.title.label }}
+        {{ form.title(class="form-control") }}
+    </div>
+    <div>
+        {{ form.description.label }}
+        {{ form.description(class="form-control", rows=3) }}
+    </div>
+    <div>
+        {{ form.ingredients.label }}
+        {{ form.ingredients(class="form-control", rows=5) }}
+    </div>
+    <div>
+        {{ form.steps.label }}
+        {{ form.steps(class="form-control", rows=5) }}
+    </div>
+    <div>
+        {{ form.image.label }}
+        {{ form.image(class="form-control") }}
+    </div>
+    <div>
+        {{ form.submit(class="btn btn-primary") }}
+    </div>
+</form>
+{% endblock %}

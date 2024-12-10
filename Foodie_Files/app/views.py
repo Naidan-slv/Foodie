@@ -39,10 +39,26 @@ admin.add_view(ModelView(Comment, db.session))
 def index():
     return render_template('index.html')
 
-@app.route('/login')
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    return render_template('login.html')
+    form = LoginForm()
+    if form.validate_on_submit():
+        # Handle login logic here
+        return redirect(url_for('index'))
+    return render_template('login.html', form=form)
 
-@app.route('/register')
+@app.route('/register', methods=['GET', 'POST'])
 def register():
-    return render_template('register.html')
+    form = RegisterForm()
+    if form.validate_on_submit():
+        # Handle registration logic here
+        return redirect(url_for('index'))
+    return render_template('register.html', form=form)
+
+@app.route('/add_recipe', methods=['GET', 'POST'])
+def add_recipe():
+    form = NewRecipeForm()
+    if form.validate_on_submit():
+        # Handle adding recipe logic here
+        return redirect(url_for('index'))
+    return render_template('new_recipe.html', form=form)
