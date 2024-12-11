@@ -1,11 +1,13 @@
+import os
 from app import app, models, db, admin
 from flask import render_template, flash, request, redirect, url_for, jsonify
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from .forms import LoginForm, RegisterForm, NewRecipeForm
+from werkzeug.utils import secure_filename
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.form import Select2Widget
 from .models import User, Recipe, SavedRecipe, Like, Comment
+from .forms import NewRecipeForm, LoginForm, RegisterForm
 
 
 # Flask-Login setup
@@ -25,6 +27,12 @@ admin.add_view(ModelView(Recipe, db.session))
 admin.add_view(ModelView(SavedRecipe, db.session))
 admin.add_view(ModelView(Like, db.session))
 admin.add_view(ModelView(Comment, db.session))
+
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+
+def allowed_file(filename):
+    """Check if the uploaded file has an allowed extension."""
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 # Index Route
@@ -54,6 +62,13 @@ def login():
 def register():
     form = RegisterForm()
     if form.validate_on_submit():
+        # Check if the email or username already exists
+        existing_user = User.query.filter((User.email == form.email.data) | (User.username == form.username.data)).first()
+        if existing_user:
+            flash('Email or username is already registered.', 'danger')
+            return redirect(url_for('register'))
+        
+        # If the email and username are unique, proceed with registration
         hashed_password = generate_password_hash(form.password.data, method='pbkdf2:sha256')
         new_user = User(
             username=form.username.data,
@@ -68,6 +83,7 @@ def register():
         except Exception as e:
             db.session.rollback()
             flash('An error occurred during registration. Please try again.', 'danger')
+    
     return render_template('register.html', form=form)
 
 
@@ -86,6 +102,7 @@ def logout():
 def add_recipe():
     form = NewRecipeForm()
     if form.validate_on_submit():
+        # Create the new recipe object
         new_recipe = Recipe(
             title=form.title.data,
             description=form.description.data,
@@ -94,22 +111,27 @@ def add_recipe():
             user_id=current_user.id
         )
         if form.image.data:
-            # Handle file uploads
+            # Validate and save the uploaded image
             filename = secure_filename(form.image.data.filename)
-            filepath = os.path.join('static/uploads', filename)
-            form.image.data.save(filepath)
-            new_recipe.image_url = f'/static/uploads/{filename}'
+            if allowed_file(filename):
+                filepath = os.path.join('app/static/uploads', filename)
+                form.image.data.save(filepath)
+                new_recipe.image_url = f'app/static/uploads/{filename}'
+            else:
+                flash('Invalid file type. Please upload an image file (png, jpg, jpeg, gif).', 'danger')
+                return redirect(request.url)
 
         try:
+            # Save the recipe to the database
             db.session.add(new_recipe)
             db.session.commit()
             flash('Recipe added successfully!', 'success')
             return redirect(url_for('index'))
         except Exception as e:
             db.session.rollback()
-            flash('An error occurred while adding the recipe. Please try again.', 'danger')
-    return render_template('new_recipe.html', form=form)
+            flash(f'An error occurred while adding the recipe: {str(e)}', 'danger')
 
+    return render_template('add_recipe.html', form=form)
 
 # AJAX Like/Unlike Route
 # @app.route('/like/<int:recipe_id>', methods=['POST'])
