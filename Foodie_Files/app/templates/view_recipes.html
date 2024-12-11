@@ -1,19 +1,28 @@
-{% extends "base.html" %}
+{% for recipe in recipes %}
+<div class="card mb-3">
+    <div class="card-body">
+        <h5 class="card-title">{{ recipe.title }}</h5>
+        <p class="card-text">{{ recipe.description }}</p>
 
-{% block content %}
-<div class="container mt-4">
-    <h1 class="mb-4">All Recipes</h1>
-    
-    {% for recipe in recipes %}
-    <div class="card mb-3">
-        <div class="card-body">
-            <h5 class="card-title">{{ recipe.title }}</h5>
-            <p class="card-text"><strong>Description:</strong> {{ recipe.description }}</p>
-            <p class="card-text"><strong>Ingredients:</strong> {{ recipe.ingredients }}</p>
-            <p class="card-text"><strong>Steps:</strong> {{ recipe.steps }}</p>
-            <p class="card-text"><small class="text-muted">Created by {{ recipe.author.username }}</small></p>
-        </div>
+        <!-- Like Button -->
+        <button class="like-button btn btn-primary" data-recipe-id="{{ recipe.id }}">
+            {% if recipe|has_liked(current_user) %}
+                Unlike
+            {% else %}
+                Like
+            {% endif %}
+        </button>
+        <span class="like-count">Likes: {{ recipe.likes|length }}</span>
+
+        <!-- Save Button -->
+        <button class="save-button btn btn-secondary" data-recipe-id="{{ recipe.id }}">
+            {% if recipe|has_saved(current_user) %}
+                Saved
+            {% else %}
+                Save
+            {% endif %}
+        </button>
     </div>
-    {% endfor %}
 </div>
-{% endblock %}
+{% endfor %}
+

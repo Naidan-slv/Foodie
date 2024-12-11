@@ -28,11 +28,29 @@ admin.add_view(ModelView(SavedRecipe, db.session))
 admin.add_view(ModelView(Like, db.session))
 admin.add_view(ModelView(Comment, db.session))
 
+###### HELPER FUNCTIONS ######
+# Checks to see whether the file uploaded in add_recipes follows the right formatting
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 def allowed_file(filename):
     """Check if the uploaded file has an allowed extension."""
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def user_has_liked(user, recipe):
+    """Check if the user has liked the recipe."""
+    return any(like.user_id == user.id for like in recipe.likes)
+
+def user_has_saved(user, recipe):
+    """Check if the user has saved the recipe."""
+    return any(save.user_id == user.id for save in recipe.saved_by)
+
+@app.template_filter('has_liked')
+def user_has_liked_filter(recipe, user):
+    return user_has_liked(user, recipe)
+
+@app.template_filter('has_saved')
+def user_has_saved_filter(recipe, user):
+    return user_has_saved(user, recipe)
 
 
 # Index Route
@@ -135,9 +153,9 @@ def add_recipe():
 
 @app.route('/view_recipes')
 def view_recipes():
-    # Fetch all recipes and their associated users
     recipes = Recipe.query.order_by(Recipe.created_at.desc()).all()
     return render_template('view_recipes.html', recipes=recipes)
+
 
 @app.route('/my_recipes', methods=['GET'])
 @login_required
@@ -193,6 +211,54 @@ def delete_recipe(recipe_id):
         flash(f'Error deleting recipe: {str(e)}', 'danger')
 
     return redirect(url_for('my_recipes'))
+
+
+@app.route('/like_recipe', methods=['POST'])
+@login_required
+def like_recipe():
+    data = request.get_json()
+    recipe_id = data.get('recipe_id')
+    recipe = Recipe.query.get_or_404(recipe_id)
+
+    # Check if the user has already liked the recipe
+    existing_like = Like.query.filter_by(user_id=current_user.id, recipe_id=recipe.id).first()
+    if existing_like:
+        # Unlike the recipe
+        db.session.delete(existing_like)
+        db.session.commit()
+        like_count = len(recipe.likes)  # Updated likes count
+        return jsonify({'status': 'unliked', 'like_count': like_count})
+    
+    # Like the recipe
+    new_like = Like(user_id=current_user.id, recipe_id=recipe.id)
+    db.session.add(new_like)
+    db.session.commit()
+    like_count = len(recipe.likes)  # Updated likes count
+    return jsonify({'status': 'liked', 'like_count': like_count})
+
+
+@app.route('/save_recipe', methods=['POST'])
+@login_required
+def save_recipe():
+    data = request.get_json()
+    recipe_id = data.get('recipe_id')
+    recipe = Recipe.query.get_or_404(recipe_id)
+
+    # Check if the user has already saved the recipe
+    existing_save = SavedRecipe.query.filter_by(user_id=current_user.id, recipe_id=recipe.id).first()
+    if existing_save:
+        # Remove from saved recipes
+        db.session.delete(existing_save)
+        db.session.commit()
+        return jsonify({'status': 'unsaved'})
+
+    # Save the recipe
+    new_save = SavedRecipe(user_id=current_user.id, recipe_id=recipe.id)
+    db.session.add(new_save)
+    db.session.commit()
+    return jsonify({'status': 'saved'})
+
+
 
 # AJAX Like/Unlike Route
 # @app.route('/like/<int:recipe_id>', methods=['POST'])
