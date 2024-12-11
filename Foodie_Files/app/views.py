@@ -133,6 +133,67 @@ def add_recipe():
 
     return render_template('add_recipe.html', form=form)
 
+@app.route('/view_recipes')
+def view_recipes():
+    # Fetch all recipes and their associated users
+    recipes = Recipe.query.order_by(Recipe.created_at.desc()).all()
+    return render_template('view_recipes.html', recipes=recipes)
+
+@app.route('/my_recipes', methods=['GET'])
+@login_required
+def my_recipes():
+    # Fetch recipes created by the logged-in user
+    recipes = Recipe.query.filter_by(user_id=current_user.id).order_by(Recipe.created_at.desc()).all()
+    return render_template('my_recipes.html', recipes=recipes)
+
+@app.route('/edit_recipe/<int:recipe_id>', methods=['GET', 'POST'])
+@login_required
+def edit_recipe(recipe_id):
+    recipe = Recipe.query.get_or_404(recipe_id)
+    if recipe.user_id != current_user.id:
+        flash('You are not authorized to edit this recipe.', 'danger')
+        return redirect(url_for('my_recipes'))
+    
+    form = NewRecipeForm(obj=recipe)  # Pre-fill the form with the current recipe data
+    if form.validate_on_submit():
+        recipe.title = form.title.data
+        recipe.description = form.description.data
+        recipe.ingredients = form.ingredients.data
+        recipe.steps = form.steps.data
+        if form.image.data:
+            filename = secure_filename(form.image.data.filename)
+            filepath = os.path.join('app/static/uploads', filename)
+            form.image.data.save(filepath)
+            recipe.image_url = f'/static/uploads/{filename}'
+        
+        try:
+            db.session.commit()
+            flash('Recipe updated successfully!', 'success')
+            return redirect(url_for('my_recipes'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error updating recipe: {str(e)}', 'danger')
+    
+    return render_template('edit_recipe.html', form=form)
+
+@app.route('/delete_recipe/<int:recipe_id>', methods=['POST', 'GET'])
+@login_required
+def delete_recipe(recipe_id):
+    recipe = Recipe.query.get_or_404(recipe_id)
+    if recipe.user_id != current_user.id:
+        flash('You are not authorized to delete this recipe.', 'danger')
+        return redirect(url_for('my_recipes'))
+
+    try:
+        db.session.delete(recipe)
+        db.session.commit()
+        flash(f'Recipe "{recipe.title}" has been deleted.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error deleting recipe: {str(e)}', 'danger')
+
+    return redirect(url_for('my_recipes'))
+
 # AJAX Like/Unlike Route
 # @app.route('/like/<int:recipe_id>', methods=['POST'])
 # @login_required
