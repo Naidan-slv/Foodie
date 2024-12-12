@@ -1,35 +1,25 @@
 {% extends 'base.html' %}
 {% block content %}
 <h1>All Recipes</h1>
-<ul>
-{% for recipe in recipes %}
-    <li>
-        <strong>{{ recipe.title }}</strong> by <em>{{ recipe.author.username }}</em>
-        <button class="view-details-button" data-recipe-id="{{ recipe.id }}">View Details</button>
 
-        {% if current_user.is_authenticated %}
-            {# Check if user already liked this recipe #}
-            {% set user_liked = (recipe.likes|selectattr('user_id','equalto',current_user.id)|list) %}
-            {% set user_saved = (recipe.saved_by|selectattr('user_id','equalto',current_user.id)|list) %}
+<div class="mb-3 d-flex align-items-center" style="gap:10px;">
+    <!-- Sort Dropdown -->
+    <select id="sortOption" class="form-select" style="width:auto;">
+        <option value="all" selected>All Recipes</option>
+        <option value="recent">Recently Added</option>
+        <option value="liked">Most Liked</option>
+        <option value="saved">Most Saved</option>
+    </select>
 
-            <button class="like-button" data-recipe-id="{{ recipe.id }}">
-                {% if user_liked %}
-                    Unlike
-                {% else %}
-                    Like
-                {% endif %}
-            </button>
+    <!-- Search Bar -->
+    <div class="input-group" style="width:300px;">
+        <input type="text" class="form-control" id="searchQuery" placeholder="Search recipes...">
+        <button class="btn btn-primary" id="searchBtn">Search</button>
+    </div>
+</div>
 
-            <button class="save-button" data-recipe-id="{{ recipe.id }}">
-                {% if user_saved %}
-                    Unsave
-                {% else %}
-                    Save
-                {% endif %}
-            </button>
-        {% endif %}
-    </li>
-{% endfor %}
+<ul id="recipeList">
+    <!-- Recipes will be populated here by AJAX -->
 </ul>
 
 <!-- Modal for Recipe Details -->

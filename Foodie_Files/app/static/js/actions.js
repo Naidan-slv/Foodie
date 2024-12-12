@@ -9,7 +9,78 @@ $(document).ready(function() {
         }
     });
 
-    // LIKE BUTTON HANDLER
+    // Load recipes on initial page load
+    loadRecipes();
+
+    // Event handler for dropdown change
+    $("#sortOption").on("change", function() {
+        loadRecipes();
+    });
+
+    // Event handler for search button
+    $("#searchBtn").on("click", function() {
+        loadRecipes();
+    });
+
+    // Handle "Enter" key in search bar
+    $("#searchQuery").on("keypress", function(e) {
+        if(e.which === 13) {
+            loadRecipes();
+        }
+    });
+
+    function loadRecipes() {
+        var sort = $("#sortOption").val();
+        var query = $("#searchQuery").val().trim();
+
+        $.ajax({
+            url: '/filter_recipes',
+            type: 'GET',
+            data: { sort: sort, q: query },
+            dataType: 'json',
+            success: function(response) {
+                renderRecipeList(response);
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+    }
+
+    function renderRecipeList(recipes) {
+        var recipeList = $("#recipeList");
+        recipeList.empty();
+    
+        if(recipes.length === 0) {
+            recipeList.append("<li>No recipes found.</li>");
+            return;
+        }
+    
+        var isAuthenticated = $('meta[name="user-authenticated"]').attr('content') === 'true';
+    
+        recipes.forEach(function(r) {
+            var li = $("<li></li>");
+            // Display likes similarly to saved_recipes:
+            // For example: "<strong>Title</strong> by Author (Likes: X)"
+            li.append("<strong>" + r.title + "</strong> by <em>" + r.author + "</em> " +
+                      "(Likes: <span id='like-count-" + r.id + "'>" + r.like_count + "</span>) ");
+            
+            li.append('<button class="view-details-button" data-recipe-id="'+r.id+'">View Details</button> ');
+    
+            if(isAuthenticated) {
+                var likeText = r.user_liked ? 'Unlike' : 'Like';
+                var saveText = r.user_saved ? 'Unsave' : 'Save';
+    
+                li.append('<button class="like-button" data-recipe-id="'+r.id+'">'+likeText+'</button> ');
+                li.append('<button class="save-button" data-recipe-id="'+r.id+'">'+saveText+'</button>');
+            }
+    
+            recipeList.append(li);
+        });
+    }
+    
+
+    // LIKE HANDLER
     $("body").on("click", ".like-button", function() {
         var recipeId = $(this).data('recipe-id');
         var clicked_obj = $(this);
@@ -21,15 +92,11 @@ $(document).ready(function() {
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             success: function(response) {
-                // Update button text
                 if (response.status === 'liked') {
                     clicked_obj.text('Unlike');
                 } else {
                     clicked_obj.text('Like');
                 }
-
-                // Update the like count in the modal if it's open
-                // If the modal is showing the same recipe, update like-count
                 $("#like-count-" + recipeId).text(response.like_count);
             },
             error: function(error) {
@@ -38,7 +105,7 @@ $(document).ready(function() {
         });
     });
 
-    // SAVE BUTTON HANDLER
+    // SAVE HANDLER
     $("body").on("click", ".save-button", function() {
         var recipeId = $(this).data('recipe-id');
         var clicked_obj = $(this);
@@ -50,7 +117,6 @@ $(document).ready(function() {
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             success: function(response) {
-                // Update button text
                 if (response.status === 'saved') {
                     clicked_obj.text('Unsave');
                 } else {
@@ -63,7 +129,7 @@ $(document).ready(function() {
         });
     });
 
-    // VIEW DETAILS BUTTON HANDLER
+    // VIEW DETAILS HANDLER (modal)
     $("body").on("click", ".view-details-button", function() {
         var recipeId = $(this).data('recipe-id');
 
@@ -73,7 +139,6 @@ $(document).ready(function() {
             data: { recipe_id: recipeId },
             dataType: 'json',
             success: function(response) {
-                // Populate the modal with recipe data
                 $("#recipeTitle").text(response.title);
                 $("#recipeAuthor").text(response.author);
                 $("#recipeDescription").text(response.description);
@@ -88,10 +153,8 @@ $(document).ready(function() {
 
                 updateCommentList(response.comments);
 
-                // Store recipeId in submit comment button
                 $("#submitCommentBtn").data('recipe-id', recipeId);
 
-                // Show the modal
                 var myModal = new bootstrap.Modal(document.getElementById('recipeModal'));
                 myModal.show();
             },
@@ -118,7 +181,7 @@ $(document).ready(function() {
             dataType: "json",
             success: function(response) {
                 if(response.status === 'success') {
-                    $("#newCommentContent").val(''); // clear textarea
+                    $("#newCommentContent").val('');
                     updateCommentList(response.comments);
                 } else {
                     console.log("Error adding comment");

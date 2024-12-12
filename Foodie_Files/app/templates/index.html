@@ -1,9 +1,48 @@
 {% extends "base.html" %}
 
-{% block title %}Index{% endblock %}
+{% block title %}Welcome to Foodie{% endblock %}
 
 {% block content %}
-<h1>Welcome to the Index Page</h1>
-<p>This is the home page of the app. Use the navigation to explore.</p>
-{% endblock %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="hero-overlay">
+        <h1 class="hero-title">Welcome to Foodie</h1>
+        <p class="hero-subtitle">Discover the best recipes, save your favorites, and share your culinary creations!</p>
+    </div>
+</section>
 
+<!-- About Section -->
+<section class="about-section py-5">
+    <div class="container">
+        <div class="row align-items-center mb-5">
+            <div class="col-md-6">
+                <img src="{{ url_for('static', filename='images/about_food.jpg') }}" class="img-fluid rounded" alt="Delicious Food">
+            </div>
+            <div class="col-md-6">
+                <h2>Discover New Recipes</h2>
+                <p>Foodie offers a wide range of recipes from appetizers to desserts. Whether you're a seasoned chef or just starting out, there's something for everyone!</p>
+            </div>
+        </div>
+
+        <div class="row align-items-center mb-5">
+            <div class="col-md-6 order-md-2">
+                <img src="{{ url_for('static', filename='images/share_food.jpg') }}" class="img-fluid rounded" alt="Share Recipes">
+            </div>
+            <div class="col-md-6 order-md-1">
+                <h2>Share Your Creations</h2>
+                <p>Upload your own recipes, share them with friends, and get inspired by the community. Foodie is the perfect place to showcase your culinary talents.</p>
+            </div>
+        </div>
+
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <img src="{{ url_for('static', filename='images/save_recipes.jpg') }}" class="img-fluid rounded" alt="Save Recipes">
+            </div>
+            <div class="col-md-6">
+                <h2>Save Your Favorites</h2>
+                <p>Keep track of your favorite recipes by saving them to your profile. Access them anytime and never lose your go-to dishes!</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

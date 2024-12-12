@@ -1,21 +1,18 @@
 {% extends 'base.html' %}
 {% block content %}
 <h1>My Saved Recipes</h1>
-<ul>
+<ul id="savedRecipeList">
 {% for recipe in saved_recipes %}
     <li>
-        <h2>{{ recipe.title }}</h2>
-        {% if recipe.image_url %}
-        <img src="{{ recipe.image_url }}" alt="{{ recipe.title }}" style="max-width:200px;">
-        {% endif %}
-        <p>{{ recipe.description }}</p>
+        <strong>{{ recipe.title }}</strong> by <em>{{ recipe.author.username }}</em> 
+        (Likes: <span id="like-count-{{ recipe.id }}">{{ recipe.likes|length }}</span>)
+        
+        <button class="view-details-button" data-recipe-id="{{ recipe.id }}">View Details</button>
 
-        <div>
-            <span>Likes: <span id="like-count-{{ recipe.id }}">{{ recipe.likes|length }}</span></span>
-            {# Check if user liked/saved for consistency #}
+        {% if current_user.is_authenticated %}
             {% set user_liked = (recipe.likes|selectattr('user_id','equalto',current_user.id)|list) %}
             {% set user_saved = (recipe.saved_by|selectattr('user_id','equalto',current_user.id)|list) %}
-
+            
             <button class="like-button" data-recipe-id="{{ recipe.id }}">
                 {% if user_liked %}
                     Unlike
@@ -23,7 +20,6 @@
                     Like
                 {% endif %}
             </button>
-
             <button class="save-button" data-recipe-id="{{ recipe.id }}">
                 {% if user_saved %}
                     Unsave
@@ -31,7 +27,7 @@
                     Save
                 {% endif %}
             </button>
-        </div>
+        {% endif %}
     </li>
 {% endfor %}
 </ul>

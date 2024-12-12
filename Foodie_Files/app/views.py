@@ -266,12 +266,6 @@ def saved_recipes():
                                 .filter(SavedRecipe.user_id == current_user.id).all()
     return render_template('saved_recipes.html', saved_recipes=saved_recipes)
 
-from app import app, db
-from flask import render_template, flash, request, redirect, url_for, jsonify
-from flask_login import login_required, current_user
-from .models import User, Recipe, SavedRecipe, Like, Comment
-from datetime import datetime
-
 @app.route('/get_recipe_details', methods=['GET'])
 def get_recipe_details():
     recipe_id = request.args.get('recipe_id', type=int)
@@ -327,6 +321,50 @@ def add_comment():
 
     return jsonify({'status': 'success', 'comments': comments_data})
 
+@app.route('/filter_recipes', methods=['GET'])
+def filter_recipes():
+    sort_option = request.args.get('sort', 'all')
+    search_query = request.args.get('q', '').strip()
+    
+    query = Recipe.query
+    
+    # Filter by search query
+    if search_query:
+        query = query.filter(
+            (Recipe.title.ilike(f"%{search_query}%")) |
+            (Recipe.description.ilike(f"%{search_query}%"))
+        )
+
+    # Sorting
+    if sort_option == 'liked':
+        query = query.outerjoin(Like).group_by(Recipe.id).order_by(db.func.count(Like.id).desc())
+    elif sort_option == 'saved':
+        query = query.outerjoin(SavedRecipe).group_by(Recipe.id).order_by(db.func.count(SavedRecipe.id).desc())
+    elif sort_option == 'recent':
+        query = query.order_by(Recipe.created_at.desc())
+    else:
+        query = query.order_by(Recipe.id.asc())
+
+    recipes = query.all()
+
+    recipe_data = []
+    for r in recipes:
+        user_liked = False
+        user_saved = False
+        if current_user.is_authenticated:
+            user_liked = any(l.user_id == current_user.id for l in r.likes)
+            user_saved = any(s.user_id == current_user.id for s in r.saved_by)
+
+        recipe_data.append({
+            'id': r.id,
+            'title': r.title,
+            'author': r.author.username,
+            'like_count': len(r.likes),  # Include like_count
+            'user_liked': user_liked,
+            'user_saved': user_saved
+        })
+
+    return jsonify(recipe_data)
 
 
 
