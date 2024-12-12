@@ -51,7 +51,7 @@ $(document).ready(function() {
         var recipeList = $("#recipeList");
         recipeList.empty();
     
-        if(recipes.length === 0) {
+        if (recipes.length === 0) {
             recipeList.append("<li>No recipes found.</li>");
             return;
         }
@@ -59,25 +59,37 @@ $(document).ready(function() {
         var isAuthenticated = $('meta[name="user-authenticated"]').attr('content') === 'true';
     
         recipes.forEach(function(r) {
-            var li = $("<li></li>");
-            // Display likes similarly to saved_recipes:
-            // For example: "<strong>Title</strong> by Author (Likes: X)"
-            li.append("<strong>" + r.title + "</strong> by <em>" + r.author + "</em> " +
-                      "(Likes: <span id='like-count-" + r.id + "'>" + r.like_count + "</span>) ");
+            // Create a list item with the new structure
+            var li = $("<li class='recipe-item'></li>");
             
-            li.append('<button class="view-details-button" data-recipe-id="'+r.id+'">View Details</button> ');
+            // Recipe info (left side)
+            var infoDiv = $("<div class='recipe-info'></div>");
+            infoDiv.append("<strong>" + r.title + "</strong> by <em>" + r.author + "</em> (Likes: <span id='like-count-" + r.id + "'>" + r.like_count + "</span>)");
+            
+            // Recipe actions (right side)
+            var actionsDiv = $("<div class='recipe-actions'></div>");
+            
+            // View Details button
+            actionsDiv.append('<button class="btn action-button view-details-button" data-recipe-id="' + r.id + '">View Details</button>');
     
-            if(isAuthenticated) {
+            // If user is authenticated, add Like and Save buttons
+            if (isAuthenticated) {
                 var likeText = r.user_liked ? 'Unlike' : 'Like';
                 var saveText = r.user_saved ? 'Unsave' : 'Save';
     
-                li.append('<button class="like-button" data-recipe-id="'+r.id+'">'+likeText+'</button> ');
-                li.append('<button class="save-button" data-recipe-id="'+r.id+'">'+saveText+'</button>');
+                actionsDiv.append('<button class="btn action-button like-button" data-recipe-id="' + r.id + '">' + likeText + '</button>');
+                actionsDiv.append('<button class="btn action-button save-button" data-recipe-id="' + r.id + '">' + saveText + '</button>');
             }
     
+            // Append info and actions to the list item
+            li.append(infoDiv);
+            li.append(actionsDiv);
+    
+            // Append the list item to the recipe list
             recipeList.append(li);
         });
     }
+    
     
 
     // LIKE HANDLER

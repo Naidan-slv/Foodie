@@ -1,56 +1,68 @@
 {% extends 'base.html' %}
+
 {% block content %}
-<h1>All Recipes</h1>
 
-<div class="mb-3 d-flex align-items-center" style="gap:10px;">
-    <!-- Sort Dropdown -->
-    <select id="sortOption" class="form-select" style="width:auto;">
-        <option value="all" selected>All Recipes</option>
-        <option value="recent">Recently Added</option>
-        <option value="liked">Most Liked</option>
-        <option value="saved">Most Saved</option>
-    </select>
+{% block styles %}
+<link href="{{ url_for('static', filename='css/view_recipes.css') }}" rel="stylesheet">
+{% endblock %}
 
-    <!-- Search Bar -->
-    <div class="input-group" style="width:300px;">
-        <input type="text" class="form-control" id="searchQuery" placeholder="Search recipes...">
-        <button class="btn btn-primary" id="searchBtn">Search</button>
+<section class="recipes-section">
+    <h1 class="section-title">All Recipes</h1>
+
+    <div class="controls">
+        <!-- Sort Dropdown -->
+         <div>
+             <select id="sortOption" class="form-select sort-dropdown ">
+                 <option value="all" selected>All Recipes</option>
+                 <option value="recent">Recently Added</option>
+                 <option value="liked">Most Liked</option>
+                 <option value="saved">Most Saved</option>
+             </select>
+         </div>
+         <br>
+
+        <!-- Search Bar -->
+        <div class="search-bar">
+            <input type="text" class="form-control search-input " id="searchQuery" placeholder="Search recipes...">
+            <button class="btn rounded-button" id="searchBtn">Search</button>
+        </div>
+        <br>
     </div>
-</div>
 
-<ul id="recipeList">
-    <!-- Recipes will be populated here by AJAX -->
-</ul>
+    <ul id="recipeList" class="recipe-list">
+        <!-- Recipes will be dynamically populated by AJAX -->
+    </ul>
 
-<!-- Modal for Recipe Details -->
-<div class="modal fade" id="recipeModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-lg" style="max-width:800px;">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="recipeTitle"></h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <p><strong>Author:</strong> <span id="recipeAuthor"></span></p>
-        <div id="recipeImageContainer"></div>
-        <p><strong>Description:</strong><br><span id="recipeDescription"></span></p>
-        <p><strong>Ingredients:</strong><br><span id="recipeIngredients"></span></p>
-        <p><strong>Steps:</strong><br><span id="recipeSteps"></span></p>
+    <!-- Modal for Recipe Details -->
+    <div class="modal fade" id="recipeModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="recipeTitle"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Author:</strong> <span id="recipeAuthor"></span></p>
+                    <div id="recipeImageContainer"></div>
+                    <p><strong>Description:</strong><br><span id="recipeDescription"></span></p>
+                    <p><strong>Ingredients:</strong><br><span id="recipeIngredients"></span></p>
+                    <p><strong>Steps:</strong><br><span id="recipeSteps"></span></p>
 
-        <hr>
-        <h5>Comments</h5>
-        <div id="commentList"></div>
+                    <hr>
+                    <h5>Comments</h5>
+                    <div id="commentList"></div>
 
-        {% if current_user.is_authenticated %}
-        <hr>
-        <h6>Add a comment</h6>
-        <textarea id="newCommentContent" class="form-control" rows="3" placeholder="Write a comment..."></textarea>
-        <button id="submitCommentBtn" class="btn btn-primary mt-2">Submit Comment</button>
-        {% else %}
-        <p>You must be logged in to comment.</p>
-        {% endif %}
-      </div>
+                    {% if current_user.is_authenticated %}
+                    <hr>
+                    <h6>Add a comment</h6>
+                    <textarea id="newCommentContent" class="form-control" rows="3" placeholder="Write a comment..."></textarea>
+                    <button id="submitCommentBtn" class="btn rounded-button mt-2">Submit Comment</button>
+                    {% else %}
+                    <p>You must be logged in to comment.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
+</section>
 {% endblock %}

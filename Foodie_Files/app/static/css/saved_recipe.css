@@ -1,0 +1,96 @@
+/* General Styling */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 0;
+}
+
+/* Section Container */
+.recipes-section {
+    padding: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    margin: 20px auto;
+    max-width: 900px;
+}
+
+/* Section Title */
+.section-title {
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: 20px;
+    color: #ff5733;
+    font-weight: bold;
+}
+
+/* Recipe List */
+.recipe-list {
+    list-style: none;
+    padding: 0;
+}
+
+.recipe-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #fff;
+    margin: 10px 0;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Recipe Info */
+.recipe-info {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    align-items: center;
+}
+
+.recipe-info strong {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.recipe-info em {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.recipe-info span[id^="like-count-"] {
+    font-size: 0.9rem;
+    color: #ff5733;
+    font-weight: bold;
+}
+
+/* Recipe Actions */
+.recipe-actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* Action Buttons */
+.btn.action-button {
+    background-color: #ff5733;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn.action-button:hover {
+    background-color: #e14d2a;
+}
+
+.btn.action-button:focus {
+    outline: none;
+    box-shadow: 0 0 5px #ff5733;
+}

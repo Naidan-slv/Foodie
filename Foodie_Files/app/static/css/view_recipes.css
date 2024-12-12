@@ -1,0 +1,169 @@
+/* General Styling */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 0;
+}
+
+/* Section Container */
+.recipes-section {
+    padding: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    margin: 20px auto;
+    max-width: 900px;
+}
+
+/* Section Title */
+.section-title {
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: 20px;
+    color: #ff5733;
+    font-weight: bold;
+}
+
+/* Controls and Search Bar */
+.controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+.sort-dropdown {
+    width: 150px; /* Reduce width of the dropdown menu */
+}
+
+/* Adjust the search bar width */
+.search-bar {
+    flex-grow: 1;
+    display: flex;
+    gap: 10px;
+}
+
+.search-input {
+    flex: 1; /* Make the input take more space */
+    min-width: 100px; /* Ensure the search bar is longer */
+}
+
+/* Rounded Buttons with Orange Hue */
+.rounded-button {
+    border-radius: 50px;
+    background-color: #ff5733;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+}
+
+.rounded-button:hover {
+    background-color: #e14d2a;
+}
+
+.rounded-button:focus {
+    outline: none;
+    box-shadow: 0 0 5px #ff5733;
+}
+
+/* Recipe List */
+.recipe-list {
+    list-style: none;
+    padding: 0;
+}
+
+.recipe-list li {
+    background-color: #fff;
+    margin: 10px 0;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Recipe Details */
+.recipe-list li strong {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #333333;
+}
+
+.recipe-list li em {
+    font-size: 0.9rem;
+    color: #666666;
+}
+
+.recipe-list li span#like-count-1 {
+    font-size: 0.9rem;
+    color: #ff5733;
+    font-weight: bold;
+}
+
+/* Buttons in Recipe List */
+.recipe-list button.view-details-button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 20px;
+    background-color: #007bff; /* Blue for "View Details" */
+    color: white;
+    font-size: 0.9rem;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+}
+
+.recipe-list button.view-details-button:hover {
+    background-color: #0056b3;
+}
+
+.recipe-list button.like-button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 20px;
+    background-color: #ff5733; /* Orange for "Like" */
+    color: white;
+    font-size: 0.9rem;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+}
+
+.recipe-list button.like-button:hover {
+    background-color: #e14d2a;
+}
+
+.recipe-list button.save-button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 20px;
+    background-color: #28a745; /* Green for "Save/Unsave" */
+    color: white;
+    font-size: 0.9rem;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+}
+
+.recipe-list button.save-button:hover {
+    background-color: #218838;
+}
+
+/* Modal Styling */
+.modal-content {
+    border-radius: 8px;
+}
+
+.modal-title {
+    color: #ff5733;
+}
+
+#newCommentContent {
+    border-radius: 8px;
+}
