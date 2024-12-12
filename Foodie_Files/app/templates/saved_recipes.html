@@ -10,7 +10,6 @@
 <section class="recipes-section">
     <h1 class="section-title">My Saved Recipes</h1>
 
-    <!-- Display saved recipes similarly to how we display all recipes -->
     <ul id="savedRecipeList" class="recipe-list">
         {% if saved_recipes %}
             {% for recipe in saved_recipes %}
@@ -48,7 +47,7 @@
     </ul>
 </section>
 
-<!-- Modal for Recipe Details (optional, if you have a modal like in view_recipes) -->
+<!-- Modal feature -->
 <div class="modal fade" id="recipeModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">

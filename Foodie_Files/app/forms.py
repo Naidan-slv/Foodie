@@ -2,8 +2,6 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, TextAreaField, SubmitField, FileField
 from wtforms.validators import DataRequired, Email, EqualTo, Length
 
-
-
 class LoginForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
@@ -27,5 +25,6 @@ class NewRecipeForm(FlaskForm):
     description = TextAreaField('Description', validators=[DataRequired(), Length(max=500)])
     ingredients = TextAreaField('Ingredients', validators=[DataRequired()])
     steps = TextAreaField('Steps', validators=[DataRequired()])
-    image = FileField('Recipe Image')  # Optional, can be handled separately in your Flask view
+    image = FileField('Recipe Image') 
     submit = SubmitField('Add Recipe')
+# submit an image which will be displayed when we open view more details for each recipe

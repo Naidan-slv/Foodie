@@ -27,7 +27,7 @@ $(document).ready(function() {
             }
         });
 
-        // Load recipes on initial page load if this is a page that uses loadRecipes()
+        // load the recipes on initial page load if this is a page that uses loadRecipes()
         loadRecipes();
     }
 

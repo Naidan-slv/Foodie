@@ -13,13 +13,14 @@ from .forms import NewRecipeForm, LoginForm, RegisterForm
 # Flask-Login setup
 login_manager = LoginManager()
 login_manager.init_app(app)
-login_manager.login_view = 'login'  # Redirect to the login page if not authenticated
+login_manager.login_view = 'Login'  
+# Here we redirect to the login page if not authenticated
 login_manager.login_message = "Please log in to access this page."
 
 # Flask-Login user loader
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))  # Assumes user_id is the primary key of User model
+    return User.query.get(int(user_id))  
 # Flask-Admin Recipe Management
 
 admin.add_view(ModelView(User, db.session))
@@ -29,19 +30,17 @@ admin.add_view(ModelView(Like, db.session))
 admin.add_view(ModelView(Comment, db.session))
 
 ###### HELPER FUNCTIONS ######
-# Checks to see whether the file uploaded in add_recipes follows the right formatting
+# Check to see whether the file uploaded in add_recipes follows the right formatting
+# Check if the user has liked or saved any posts so we know what to display 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 def allowed_file(filename):
-    """Check if the uploaded file has an allowed extension."""
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def user_has_liked(user, recipe):
-    """Check if the user has liked the recipe."""
     return any(like.user_id == user.id for like in recipe.likes)
 
 def user_has_saved(user, recipe):
-    """Check if the user has saved the recipe."""
     return any(save.user_id == user.id for save in recipe.saved_by)
 
 @app.template_filter('has_liked')
@@ -53,14 +52,15 @@ def user_has_saved_filter(recipe, user):
     return user_has_saved(user, recipe)
 
 
-# Index Route
+# This is our Home page
 @app.route('/')
 def index():
     recipes = Recipe.query.order_by(Recipe.created_at.desc()).all()
     return render_template('index.html', recipes=recipes)
 
 
-# Login Route
+# Here is where we login
+# Only display certain pages if not logged in and limit what they can do
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
@@ -76,17 +76,19 @@ def login():
 
 
 # Register Route
+# When creating a new password verify they are the same by having them write it out twice
+# We also encrypt the users password using werkzeug
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
     if form.validate_on_submit():
-        # Check if the email or username already exists
+        # Check if email or username already exist to ensure theyre unique
         existing_user = User.query.filter((User.email == form.email.data) | (User.username == form.username.data)).first()
         if existing_user:
             flash('Email or username is already registered.', 'danger')
             return redirect(url_for('register'))
         
-        # If the email and username are unique, proceed with registration
+        # If email and username are unique, proceed with registration
         hashed_password = generate_password_hash(form.password.data, method='pbkdf2:sha256')
         new_user = User(
             username=form.username.data,
@@ -105,7 +107,7 @@ def register():
     return render_template('register.html', form=form)
 
 
-# Logout Route
+# Can only LOGOUT if logged in 
 @app.route('/logout')
 @login_required
 def logout():
@@ -120,7 +122,7 @@ def logout():
 def add_recipe():
     form = NewRecipeForm()
     if form.validate_on_submit():
-        # Create the new recipe object
+        # Create the new recipe object by calling it 
         new_recipe = Recipe(
             title=form.title.data,
             description=form.description.data,
@@ -129,7 +131,7 @@ def add_recipe():
             user_id=current_user.id
         )
         if form.image.data:
-            # Validate and save the uploaded image
+            # validate and save the image
             filename = secure_filename(form.image.data.filename)
             if allowed_file(filename):
                 filepath = os.path.join('app/static/uploads', filename)
@@ -140,7 +142,7 @@ def add_recipe():
                 return redirect(request.url)
 
         try:
-            # Save the recipe to the database
+            # save the recipe to the database
             db.session.add(new_recipe)
             db.session.commit()
             flash('Recipe added successfully!', 'success')
@@ -160,7 +162,7 @@ def view_recipes():
 @app.route('/my_recipes', methods=['GET'])
 @login_required
 def my_recipes():
-    # Fetch recipes created by the logged-in user
+    # Look for the recipes created by the logged-in user
     recipes = Recipe.query.filter_by(user_id=current_user.id).order_by(Recipe.created_at.desc()).all()
     return render_template('my_recipes.html', recipes=recipes)
 
@@ -172,7 +174,8 @@ def edit_recipe(recipe_id):
         flash('You are not authorized to edit this recipe.', 'danger')
         return redirect(url_for('my_recipes'))
     
-    form = NewRecipeForm(obj=recipe)  # Pre-fill the form with the current recipe data
+    # Pre-fill the form with the current recipe data
+    form = NewRecipeForm(obj=recipe) 
     if form.validate_on_submit():
         recipe.title = form.title.data
         recipe.description = form.description.data
