@@ -258,21 +258,14 @@ def save_recipe():
     db.session.commit()
     return jsonify({'status': 'saved'})
 
+@app.route('/saved_recipes', methods=['GET'])
+@login_required
+def saved_recipes():
+    # Fetch recipes saved by the current user
+    saved_recipes = Recipe.query.join(SavedRecipe, Recipe.id == SavedRecipe.recipe_id) \
+                                .filter(SavedRecipe.user_id == current_user.id).all()
+    return render_template('saved_recipes.html', saved_recipes=saved_recipes)
 
 
-# AJAX Like/Unlike Route
-# @app.route('/like/<int:recipe_id>', methods=['POST'])
-# @login_required
-# def like_recipe(recipe_id):
-#     recipe = Recipe.query.get_or_404(recipe_id)
-#     like = Like.query.filter_by(user_id=current_user.id, recipe_id=recipe_id).first()
 
-#     if like:
-#         db.session.delete(like)
-#         db.session.commit()
-#         return jsonify({'status': 'unliked', 'like_count': len(recipe.likes)})
 
-#     new_like = Like(user_id=current_user.id, recipe_id=recipe_id)
-#     db.session.add(new_like)
-#     db.session.commit()
-#     return jsonify({'status': 'liked', 'like_count': len(recipe.likes)})

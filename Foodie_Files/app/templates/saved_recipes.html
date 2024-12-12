@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>My Saved Recipes</h1>
+<ul>
+{% for recipe in saved_recipes %}
+    <li>
+        <h2>{{ recipe.title }}</h2>
+        {% if recipe.image_url %}
+        <img src="{{ recipe.image_url }}" alt="{{ recipe.title }}" style="max-width:200px;">
+        {% endif %}
+        <p>{{ recipe.description }}</p>
+
+        <div>
+            <span>Likes: <span id="like-count-{{ recipe.id }}">{{ recipe.likes|length }}</span></span>
+            {# Check if user liked/saved for consistency #}
+            {% set user_liked = (recipe.likes|selectattr('user_id','equalto',current_user.id)|list) %}
+            {% set user_saved = (recipe.saved_by|selectattr('user_id','equalto',current_user.id)|list) %}
+
+            <button class="like-button" data-recipe-id="{{ recipe.id }}">
+                {% if user_liked %}
+                    Unlike
+                {% else %}
+                    Like
+                {% endif %}
+            </button>
+
+            <button class="save-button" data-recipe-id="{{ recipe.id }}">
+                {% if user_saved %}
+                    Unsave
+                {% else %}
+                    Save
+                {% endif %}
+            </button>
+        </div>
+    </li>
+{% endfor %}
+</ul>
+{% endblock %}
