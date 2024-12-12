@@ -4,39 +4,63 @@
 <ul>
 {% for recipe in recipes %}
     <li>
-        <h2>{{ recipe.title }}</h2>
-        {% if recipe.image_url %}
-        <img src="{{ recipe.image_url }}" alt="{{ recipe.title }}" style="max-width:200px;">
+        <strong>{{ recipe.title }}</strong> by <em>{{ recipe.author.username }}</em>
+        <button class="view-details-button" data-recipe-id="{{ recipe.id }}">View Details</button>
+
+        {% if current_user.is_authenticated %}
+            {# Check if user already liked this recipe #}
+            {% set user_liked = (recipe.likes|selectattr('user_id','equalto',current_user.id)|list) %}
+            {% set user_saved = (recipe.saved_by|selectattr('user_id','equalto',current_user.id)|list) %}
+
+            <button class="like-button" data-recipe-id="{{ recipe.id }}">
+                {% if user_liked %}
+                    Unlike
+                {% else %}
+                    Like
+                {% endif %}
+            </button>
+
+            <button class="save-button" data-recipe-id="{{ recipe.id }}">
+                {% if user_saved %}
+                    Unsave
+                {% else %}
+                    Save
+                {% endif %}
+            </button>
         {% endif %}
-        <p>{{ recipe.description }}</p>
-        
-        <div>
-            <span>Likes: <span id="like-count-{{ recipe.id }}">{{ recipe.likes|length }}</span></span>
-            {% if current_user.is_authenticated %}
-                {# Check if user already liked this recipe #}
-                {% set user_liked = (recipe.likes|selectattr('user_id','equalto',current_user.id)|list) %}
-                {% set user_saved = (recipe.saved_by|selectattr('user_id','equalto',current_user.id)|list) %}
-
-                <button class="like-button" data-recipe-id="{{ recipe.id }}">
-                    {% if user_liked %}
-                        Unlike
-                    {% else %}
-                        Like
-                    {% endif %}
-                </button>
-
-                <button class="save-button" data-recipe-id="{{ recipe.id }}">
-                    {% if user_saved %}
-                        Unsave
-                    {% else %}
-                        Save
-                    {% endif %}
-                </button>
-            {% else %}
-                <p>You must be logged in to like or save recipes.</p>
-            {% endif %}
-        </div>
     </li>
 {% endfor %}
 </ul>
+
+<!-- Modal for Recipe Details -->
+<div class="modal fade" id="recipeModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg" style="max-width:800px;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="recipeTitle"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p><strong>Author:</strong> <span id="recipeAuthor"></span></p>
+        <div id="recipeImageContainer"></div>
+        <p><strong>Description:</strong><br><span id="recipeDescription"></span></p>
+        <p><strong>Ingredients:</strong><br><span id="recipeIngredients"></span></p>
+        <p><strong>Steps:</strong><br><span id="recipeSteps"></span></p>
+
+        <hr>
+        <h5>Comments</h5>
+        <div id="commentList"></div>
+
+        {% if current_user.is_authenticated %}
+        <hr>
+        <h6>Add a comment</h6>
+        <textarea id="newCommentContent" class="form-control" rows="3" placeholder="Write a comment..."></textarea>
+        <button id="submitCommentBtn" class="btn btn-primary mt-2">Submit Comment</button>
+        {% else %}
+        <p>You must be logged in to comment.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

@@ -266,6 +266,69 @@ def saved_recipes():
                                 .filter(SavedRecipe.user_id == current_user.id).all()
     return render_template('saved_recipes.html', saved_recipes=saved_recipes)
 
+from app import app, db
+from flask import render_template, flash, request, redirect, url_for, jsonify
+from flask_login import login_required, current_user
+from .models import User, Recipe, SavedRecipe, Like, Comment
+from datetime import datetime
+
+@app.route('/get_recipe_details', methods=['GET'])
+def get_recipe_details():
+    recipe_id = request.args.get('recipe_id', type=int)
+    recipe = Recipe.query.get_or_404(recipe_id)
+
+    # Fetch comments and serialize them
+    comments_data = []
+    comments = Comment.query.filter_by(recipe_id=recipe_id).order_by(Comment.created_at.asc()).all()
+    for c in comments:
+        comments_data.append({
+            'author': c.user.username,
+            'content': c.content,
+            'created_at': c.created_at.strftime("%Y-%m-%d %H:%M:%S")
+        })
+
+    recipe_data = {
+        'title': recipe.title,
+        'author': recipe.author.username,
+        'description': recipe.description,
+        'ingredients': recipe.ingredients,
+        'steps': recipe.steps,
+        'image_url': recipe.image_url,
+        'comments': comments_data
+    }
+
+    return jsonify(recipe_data)
+
+@app.route('/add_comment', methods=['POST'])
+@login_required
+def add_comment():
+    data = request.get_json()
+    recipe_id = data.get('recipe_id')
+    content = data.get('content', '').strip()
+    if not content:
+        return jsonify({'status': 'error', 'message': 'Comment content cannot be empty.'}), 400
+    
+    recipe = Recipe.query.get_or_404(recipe_id)
+
+    # Create the new comment
+    new_comment = Comment(user_id=current_user.id, recipe_id=recipe_id, content=content)
+    db.session.add(new_comment)
+    db.session.commit()
+
+    # Return updated comments
+    comments_data = []
+    comments = Comment.query.filter_by(recipe_id=recipe_id).order_by(Comment.created_at.asc()).all()
+    for c in comments:
+        comments_data.append({
+            'author': c.user.username,
+            'content': c.content,
+            'created_at': c.created_at.strftime("%Y-%m-%d")
+        })
+
+    return jsonify({'status': 'success', 'comments': comments_data})
+
+
+
 
 
 
