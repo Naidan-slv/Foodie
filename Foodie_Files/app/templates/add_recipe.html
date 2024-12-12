@@ -2,28 +2,38 @@
 
 {% block title %}Add Recipe{% endblock %}
 
+
 {% block content %}
-<h1>Add a New Recipe</h1>
+
+{% block styles %}
+<link href="{{ url_for('static', filename='css/add_recipe.css') }}" rel="stylesheet">
+{% endblock %}
+
 <form method="POST" action="/add_recipe" enctype="multipart/form-data">
+    <h1>Add a New Recipe</h1>
     {{ form.hidden_tag() }}
     <div>
-        <label for="title">{{ form.title.label }}</label>
+        <label for="title"class="label-custom">{{ form.title.label }}</label>
         {{ form.title(class="form-control") }}
     </div>
+    <br>
     <div>
-        <label for="description">{{ form.description.label }}</label>
+        <label for="description"class="label-custom" >{{ form.description.label }}</label>
         {{ form.description(class="form-control", rows=3) }}
     </div>
+    <br>
     <div>
-        <label for="ingredients">{{ form.ingredients.label }}</label>
+        <label for="ingredients" class="label-custom">{{ form.ingredients.label }}</label>
         {{ form.ingredients(class="form-control", rows=5) }}
     </div>
+    <br>
     <div>
-        <label for="steps">{{ form.steps.label }}</label>
+        <label for="steps" class="label-custom">{{ form.steps.label }}</label>
         {{ form.steps(class="form-control", rows=5) }}
     </div>
+    <br>
     <div>
-        <label for="image">{{ form.image.label }}</label>
+        <label for="image" class="label-custom">{{ form.image.label }}</label>
         {{ form.image(class="form-control") }}
     </div>
     <br>

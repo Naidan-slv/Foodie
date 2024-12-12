@@ -3,23 +3,32 @@
 {% block title %}Register{% endblock %}
 
 {% block content %}
-<h1>Register</h1>
+{% block styles %}
+<link href="{{ url_for('static', filename='css/register.css') }}" rel="stylesheet">
+{% endblock %}
+
 <form method="POST" action="/register">
     {{ form.hidden_tag() }}
+    
+    <h1>Register</h1>
+
     <div>
-        {{ form.username.label }}
+        <label for="username" class="custom-label" >{{ form.username.label }}</label>
         {{ form.username(class="form-control") }}
     </div>
+    <br>
     <div>
-        {{ form.email.label }}
+        <label for="email" class="custom-label" >{{ form.email.label }}</label>
         {{ form.email(class="form-control") }}
     </div>
+    <br>
     <div>
-        {{ form.password.label }}
+        <label for="password" class="custom-label" >{{ form.password.label }}</label>
         {{ form.password(class="form-control") }}
     </div>
+    <br>
     <div>
-        {{ form.confirm_password.label }}
+        <label for="confirm_password" class="custom-label" >{{ form.confirm_password.label }}</label>
         {{ form.confirm_password(class="form-control") }}
     </div>
     <br>

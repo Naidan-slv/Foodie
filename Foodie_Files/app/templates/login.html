@@ -3,15 +3,18 @@
 {% block title %}Login{% endblock %}
 
 {% block content %}
+{% block styles %}
+<link href="{{ url_for('static', filename='css/login.css') }}" rel="stylesheet">
+{% endblock %}
 <h1>Login</h1>
 <form method="POST" action="/login">
     {{ form.hidden_tag() }}
     <div>
-        {{ form.email.label }}
+        <label for="email" class="custom-label" >{{ form.email.label }}</label>
         {{ form.email(class="form-control") }}
     </div>
     <div>
-        {{ form.password.label }}
+        <label for="password" class="custom-label" >{{ form.password.label }}</label>
         {{ form.password(class="form-control") }}
     </div>
     <br>

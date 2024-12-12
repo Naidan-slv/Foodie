@@ -2,6 +2,9 @@
 
 {% block content %}
 <div class="container mt-4">
+{% block styles %}
+<link href="{{ url_for('static', filename='css/my_recipes.css') }}" rel="stylesheet">
+{% endblock %}
     <h1 class="mb-4">My Recipes</h1>
     
     {% for recipe in recipes %}

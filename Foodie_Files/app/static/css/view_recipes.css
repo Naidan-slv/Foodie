@@ -1,4 +1,3 @@
-/* General Styling */
 body {
     font-family: 'Arial', sans-serif;
     background-color: #f9f9f9;
@@ -100,7 +99,7 @@ body {
 
 .recipe-list li span#like-count-1 {
     font-size: 0.9rem;
-    color: #ff5733;
+    color: #053ea7;
     font-weight: bold;
 }
 
@@ -125,7 +124,7 @@ body {
     padding: 8px 12px;
     border: none;
     border-radius: 20px;
-    background-color: #ff5733; /* Orange for "Like" */
+    background-color: #ff5733; 
     color: white;
     font-size: 0.9rem;
     font-weight: bold;

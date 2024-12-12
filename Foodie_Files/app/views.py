@@ -68,10 +68,10 @@ def login():
         user = User.query.filter_by(email=form.email.data).first()
         if user and check_password_hash(user.password_hash, form.password.data):
             login_user(user)
-            flash('You have successfully logged in.', 'success')
+            flash('User is now logged in', 'success')
             return redirect(url_for('index'))
         else:
-            flash('Invalid email or password.', 'danger')
+            flash('Invalid email or password try again .', 'danger')
     return render_template('login.html', form=form)
 
 
@@ -85,7 +85,7 @@ def register():
         # Check if email or username already exist to ensure theyre unique
         existing_user = User.query.filter((User.email == form.email.data) | (User.username == form.username.data)).first()
         if existing_user:
-            flash('Email or username is already registered.', 'danger')
+            flash('The Username or Email are already registered', 'danger')
             return redirect(url_for('register'))
         
         # If email and username are unique, proceed with registration
@@ -98,7 +98,7 @@ def register():
         try:
             db.session.add(new_user)
             db.session.commit()
-            flash('Registration successful! You can now log in.', 'success')
+            flash('Account Registrated Please login : ', 'success')
             return redirect(url_for('login'))
         except Exception as e:
             db.session.rollback()
@@ -112,7 +112,7 @@ def register():
 @login_required
 def logout():
     logout_user()
-    flash('You have been logged out.', 'info')
+    flash('Successfully logged out ', 'info')
     return redirect(url_for('login'))
 
 
@@ -171,7 +171,7 @@ def my_recipes():
 def edit_recipe(recipe_id):
     recipe = Recipe.query.get_or_404(recipe_id)
     if recipe.user_id != current_user.id:
-        flash('You are not authorized to edit this recipe.', 'danger')
+        flash('You are not authorised to edit this recipe.', 'danger')
         return redirect(url_for('my_recipes'))
     
     # Pre-fill the form with the current recipe data
@@ -189,7 +189,7 @@ def edit_recipe(recipe_id):
         
         try:
             db.session.commit()
-            flash('Recipe updated successfully!', 'success')
+            flash('Recipe updated successfully ', 'success')
             return redirect(url_for('my_recipes'))
         except Exception as e:
             db.session.rollback()
@@ -202,7 +202,7 @@ def edit_recipe(recipe_id):
 def delete_recipe(recipe_id):
     recipe = Recipe.query.get_or_404(recipe_id)
     if recipe.user_id != current_user.id:
-        flash('You are not authorized to delete this recipe.', 'danger')
+        flash('You are not authorised to delete this recipe.', 'danger')
         return redirect(url_for('my_recipes'))
 
     try:

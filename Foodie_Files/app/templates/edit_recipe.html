@@ -2,6 +2,9 @@
 
 <!--Taking input from the form and updating it to change the value in the database -->
 {% block content %}
+{% block styles %}
+<link href="{{ url_for('static', filename='css/add_recipe.css') }}" rel="stylesheet">
+{% endblock %}
 <div class="container mt-4">
     <h1 class="mb-4">Edit Recipe</h1>
     
@@ -9,30 +12,30 @@
         {{ form.hidden_tag() }}
         
         <div class="form-group">
-            {{ form.title.label(class="form-label") }}
+            {{ form.title.label(class="label-custom") }}
             {{ form.title(class="form-control") }}
         </div>
-        
+       <br> 
         <div class="form-group">
-            {{ form.description.label(class="form-label") }}
+            {{ form.description.label(class="label-custom") }}
             {{ form.description(class="form-control") }}
         </div>
-        
+        <br>
         <div class="form-group">
-            {{ form.ingredients.label(class="form-label") }}
+            {{ form.ingredients.label(class="label-custom") }}
             {{ form.ingredients(class="form-control") }}
         </div>
-        
+        <br>
         <div class="form-group">
-            {{ form.steps.label(class="form-label") }}
+            {{ form.steps.label(class="label-custom") }}
             {{ form.steps(class="form-control") }}
         </div>
-        
+        <br>
         <div class="form-group">
-            {{ form.image.label(class="form-label") }}
+            {{ form.image.label(class="label-custom") }}
             {{ form.image(class="form-control-file") }}
         </div>
-        
+        <br>
         <button type="submit" class="btn btn-primary">Save Changes</button>
     </form>
 </div>
