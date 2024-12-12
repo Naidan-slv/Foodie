@@ -9,90 +9,29 @@ $(document).ready(function() {
         }
     });
 
-    // Load recipes on initial page load
-    loadRecipes();
-
-    // Event handler for dropdown change
-    $("#sortOption").on("change", function() {
-        loadRecipes();
-    });
-
-    // Event handler for search button
-    $("#searchBtn").on("click", function() {
-        loadRecipes();
-    });
-
-    // Handle "Enter" key in search bar
-    $("#searchQuery").on("keypress", function(e) {
-        if(e.which === 13) {
+    // Check if this page has the filter/sort/search elements
+    // If yes, we assume this is a page like view_recipes.html and handle filtering.
+    if ($("#sortOption").length > 0 && $("#searchQuery").length > 0 && $("#recipeList").length > 0) {
+        // Set up event handlers related to sorting and searching
+        $("#sortOption").on("change", function() {
             loadRecipes();
-        }
-    });
+        });
 
-    function loadRecipes() {
-        var sort = $("#sortOption").val();
-        var query = $("#searchQuery").val().trim();
+        $("#searchBtn").on("click", function() {
+            loadRecipes();
+        });
 
-        $.ajax({
-            url: '/filter_recipes',
-            type: 'GET',
-            data: { sort: sort, q: query },
-            dataType: 'json',
-            success: function(response) {
-                renderRecipeList(response);
-            },
-            error: function(error) {
-                console.log(error);
+        $("#searchQuery").on("keypress", function(e) {
+            if(e.which === 13) {
+                loadRecipes();
             }
         });
+
+        // Load recipes on initial page load if this is a page that uses loadRecipes()
+        loadRecipes();
     }
 
-    function renderRecipeList(recipes) {
-        var recipeList = $("#recipeList");
-        recipeList.empty();
-    
-        if (recipes.length === 0) {
-            recipeList.append("<li>No recipes found.</li>");
-            return;
-        }
-    
-        var isAuthenticated = $('meta[name="user-authenticated"]').attr('content') === 'true';
-    
-        recipes.forEach(function(r) {
-            // Create a list item with the new structure
-            var li = $("<li class='recipe-item'></li>");
-            
-            // Recipe info (left side)
-            var infoDiv = $("<div class='recipe-info'></div>");
-            infoDiv.append("<strong>" + r.title + "</strong> by <em>" + r.author + "</em> (Likes: <span id='like-count-" + r.id + "'>" + r.like_count + "</span>)");
-            
-            // Recipe actions (right side)
-            var actionsDiv = $("<div class='recipe-actions'></div>");
-            
-            // View Details button
-            actionsDiv.append('<button class="btn action-button view-details-button" data-recipe-id="' + r.id + '">View Details</button>');
-    
-            // If user is authenticated, add Like and Save buttons
-            if (isAuthenticated) {
-                var likeText = r.user_liked ? 'Unlike' : 'Like';
-                var saveText = r.user_saved ? 'Unsave' : 'Save';
-    
-                actionsDiv.append('<button class="btn action-button like-button" data-recipe-id="' + r.id + '">' + likeText + '</button>');
-                actionsDiv.append('<button class="btn action-button save-button" data-recipe-id="' + r.id + '">' + saveText + '</button>');
-            }
-    
-            // Append info and actions to the list item
-            li.append(infoDiv);
-            li.append(actionsDiv);
-    
-            // Append the list item to the recipe list
-            recipeList.append(li);
-        });
-    }
-    
-    
-
-    // LIKE HANDLER
+    // Event handlers for like/unlike, save/unsave, and view details (works on any page)
     $("body").on("click", ".like-button", function() {
         var recipeId = $(this).data('recipe-id');
         var clicked_obj = $(this);
@@ -117,7 +56,6 @@ $(document).ready(function() {
         });
     });
 
-    // SAVE HANDLER
     $("body").on("click", ".save-button", function() {
         var recipeId = $(this).data('recipe-id');
         var clicked_obj = $(this);
@@ -141,7 +79,6 @@ $(document).ready(function() {
         });
     });
 
-    // VIEW DETAILS HANDLER (modal)
     $("body").on("click", ".view-details-button", function() {
         var recipeId = $(this).data('recipe-id');
 
@@ -176,7 +113,6 @@ $(document).ready(function() {
         });
     });
 
-    // SUBMIT COMMENT HANDLER
     $("body").on("click", "#submitCommentBtn", function() {
         var recipeId = $(this).data('recipe-id');
         var content = $("#newCommentContent").val().trim();
@@ -217,5 +153,58 @@ $(document).ready(function() {
                 commentList.append(commentHTML);
             }
         }
+    }
+
+    // These functions only run if the necessary elements are present
+    function loadRecipes() {
+        var sort = $("#sortOption").val();
+        var query = $("#searchQuery").val().trim();
+
+        $.ajax({
+            url: '/filter_recipes',
+            type: 'GET',
+            data: { sort: sort, q: query },
+            dataType: 'json',
+            success: function(response) {
+                renderRecipeList(response);
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+    }
+
+    function renderRecipeList(recipes) {
+        var recipeList = $("#recipeList");
+        recipeList.empty();
+    
+        if (recipes.length === 0) {
+            recipeList.append("<li>No recipes found.</li>");
+            return;
+        }
+    
+        var isAuthenticated = $('meta[name="user-authenticated"]').attr('content') === 'true';
+    
+        recipes.forEach(function(r) {
+            var li = $("<li class='recipe-item'></li>");
+
+            var infoDiv = $("<div class='recipe-info'></div>");
+            infoDiv.append("<strong>" + r.title + "</strong> by <em>" + r.author + "</em> (Likes: <span id='like-count-" + r.id + "'>" + r.like_count + "</span>)");
+
+            var actionsDiv = $("<div class='recipe-actions'></div>");
+            actionsDiv.append('<button class="btn action-button view-details-button" data-recipe-id="' + r.id + '">View Details</button>');
+    
+            if (isAuthenticated) {
+                var likeText = r.user_liked ? 'Unlike' : 'Like';
+                var saveText = r.user_saved ? 'Unsave' : 'Save';
+                actionsDiv.append('<button class="btn action-button like-button" data-recipe-id="' + r.id + '">' + likeText + '</button>');
+                actionsDiv.append('<button class="btn action-button save-button" data-recipe-id="' + r.id + '">' + saveText + '</button>');
+            }
+
+            li.append(infoDiv);
+            li.append(actionsDiv);
+
+            recipeList.append(li);
+        });
     }
 });

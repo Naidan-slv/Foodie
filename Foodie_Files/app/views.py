@@ -220,7 +220,7 @@ def like_recipe():
     recipe_id = data.get('recipe_id')
     recipe = Recipe.query.get_or_404(recipe_id)
 
-    # Check if the user has already liked the recipe
+    # Checking if the user has liked the recipe
     existing_like = Like.query.filter_by(user_id=current_user.id, recipe_id=recipe.id).first()
     if existing_like:
         # Unlike the recipe
@@ -229,7 +229,7 @@ def like_recipe():
         like_count = len(recipe.likes)  # Updated likes count
         return jsonify({'status': 'unliked', 'like_count': like_count})
     
-    # Like the recipe
+    # If they have liked the recipe
     new_like = Like(user_id=current_user.id, recipe_id=recipe.id)
     db.session.add(new_like)
     db.session.commit()
@@ -244,7 +244,7 @@ def save_recipe():
     recipe_id = data.get('recipe_id')
     recipe = Recipe.query.get_or_404(recipe_id)
 
-    # Check if the user has already saved the recipe
+    #check if the user has already saved the recipe
     existing_save = SavedRecipe.query.filter_by(user_id=current_user.id, recipe_id=recipe.id).first()
     if existing_save:
         # Remove from saved recipes
@@ -252,7 +252,7 @@ def save_recipe():
         db.session.commit()
         return jsonify({'status': 'unsaved'})
 
-    # Save the recipe
+    # save the recipe
     new_save = SavedRecipe(user_id=current_user.id, recipe_id=recipe.id)
     db.session.add(new_save)
     db.session.commit()
@@ -261,7 +261,7 @@ def save_recipe():
 @app.route('/saved_recipes', methods=['GET'])
 @login_required
 def saved_recipes():
-    # Fetch recipes saved by the current user
+    # get the recipes saved by the current user
     saved_recipes = Recipe.query.join(SavedRecipe, Recipe.id == SavedRecipe.recipe_id) \
                                 .filter(SavedRecipe.user_id == current_user.id).all()
     return render_template('saved_recipes.html', saved_recipes=saved_recipes)
@@ -271,7 +271,7 @@ def get_recipe_details():
     recipe_id = request.args.get('recipe_id', type=int)
     recipe = Recipe.query.get_or_404(recipe_id)
 
-    # Fetch comments and serialize them
+    # fetch comments and serialize them
     comments_data = []
     comments = Comment.query.filter_by(recipe_id=recipe_id).order_by(Comment.created_at.asc()).all()
     for c in comments:

@@ -2,7 +2,6 @@ from app import db
 from datetime import datetime
 from flask_login import UserMixin
 
-# User Model
 class User(db.Model,UserMixin):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -19,7 +18,6 @@ class User(db.Model,UserMixin):
     likes = db.relationship('Like', back_populates='user', cascade="all, delete-orphan")
     saved_recipes = db.relationship('SavedRecipe', back_populates='user', cascade="all, delete-orphan")
 
-# Recipe Model
 class Recipe(db.Model):
     __tablename__ = 'recipes'
 
@@ -37,12 +35,11 @@ class Recipe(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     
-    # Relationships to Likes and Saved Recipes
+
     likes = db.relationship('Like', back_populates='recipe', cascade="all, delete-orphan")
     saved_by = db.relationship('SavedRecipe', back_populates='recipe', cascade="all, delete-orphan")
     
 
-# Like Model
 class Like(db.Model):
     __tablename__ = 'likes'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -56,7 +53,6 @@ class Like(db.Model):
     user = db.relationship('User', back_populates='likes')
     recipe = db.relationship('Recipe', back_populates='likes')
 
-# SavedRecipe Model
 class SavedRecipe(db.Model):
     __tablename__ = 'saved_recipes'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -70,7 +66,6 @@ class SavedRecipe(db.Model):
     user = db.relationship('User', back_populates='saved_recipes')
     recipe = db.relationship('Recipe', back_populates='saved_by')
 
-# Comment Model (Optional)
 class Comment(db.Model):
     __tablename__ = 'comments'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)

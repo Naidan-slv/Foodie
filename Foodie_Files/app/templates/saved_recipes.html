@@ -1,34 +1,86 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+
+
 {% block content %}
-<h1>My Saved Recipes</h1>
-<ul id="savedRecipeList">
-{% for recipe in saved_recipes %}
-    <li>
-        <strong>{{ recipe.title }}</strong> by <em>{{ recipe.author.username }}</em> 
-        (Likes: <span id="like-count-{{ recipe.id }}">{{ recipe.likes|length }}</span>)
-        
-        <button class="view-details-button" data-recipe-id="{{ recipe.id }}">View Details</button>
+
+{% block styles %}
+<link href="{{ url_for('static', filename='css/view_recipes.css') }}" rel="stylesheet">
+{% endblock %}
+
+<section class="recipes-section">
+    <h1 class="section-title">My Saved Recipes</h1>
+
+    <!-- Display saved recipes similarly to how we display all recipes -->
+    <ul id="savedRecipeList" class="recipe-list">
+        {% if saved_recipes %}
+            {% for recipe in saved_recipes %}
+            <li class="recipe-item">
+                <div class="recipe-info">
+                    <strong>{{ recipe.title }}</strong> by <em>{{ recipe.author.username }}</em>
+                    (Likes: <span id="like-count-{{ recipe.id }}">{{ recipe.likes|length }}</span>)
+                </div>
+                <div class="recipe-actions">
+                    <button class="btn action-button view-details-button" data-recipe-id="{{ recipe.id }}">View Details</button>
+
+                    {% set user_liked = recipe.likes|selectattr('user_id','equalto',current_user.id)|list %}
+                    {% set user_saved = recipe.saved_by|selectattr('user_id','equalto',current_user.id)|list %}
+
+                    <button class="btn action-button like-button" data-recipe-id="{{ recipe.id }}">
+                        {% if user_liked %}
+                            Unlike
+                        {% else %}
+                            Like
+                        {% endif %}
+                    </button>
+                    <button class="btn action-button save-button" data-recipe-id="{{ recipe.id }}">
+                        {% if user_saved %}
+                            Unsave
+                        {% else %}
+                            Save
+                        {% endif %}
+                    </button>
+                </div>
+            </li>
+            {% endfor %}
+        {% else %}
+            <li>No saved recipes found.</li>
+        {% endif %}
+    </ul>
+</section>
+
+<!-- Modal for Recipe Details (optional, if you have a modal like in view_recipes) -->
+<div class="modal fade" id="recipeModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="recipeTitle"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p><strong>Author:</strong> <span id="recipeAuthor"></span></p>
+        <div id="recipeImageContainer"></div>
+        <p><strong>Description:</strong><br><span id="recipeDescription"></span></p>
+        <p><strong>Ingredients:</strong><br><span id="recipeIngredients"></span></p>
+        <p><strong>Steps:</strong><br><span id="recipeSteps"></span></p>
+
+        <hr>
+        <h5>Comments</h5>
+        <div id="commentList"></div>
 
         {% if current_user.is_authenticated %}
-            {% set user_liked = (recipe.likes|selectattr('user_id','equalto',current_user.id)|list) %}
-            {% set user_saved = (recipe.saved_by|selectattr('user_id','equalto',current_user.id)|list) %}
-            
-            <button class="like-button" data-recipe-id="{{ recipe.id }}">
-                {% if user_liked %}
-                    Unlike
-                {% else %}
-                    Like
-                {% endif %}
-            </button>
-            <button class="save-button" data-recipe-id="{{ recipe.id }}">
-                {% if user_saved %}
-                    Unsave
-                {% else %}
-                    Save
-                {% endif %}
-            </button>
+        <hr>
+        <h6>Add a comment</h6>
+        <textarea id="newCommentContent" class="form-control" rows="3" placeholder="Write a comment..."></textarea>
+        <button id="submitCommentBtn" class="btn action-button mt-2">Submit Comment</button>
+        {% else %}
+        <p>You must be logged in to comment.</p>
         {% endif %}
-    </li>
-{% endfor %}
-</ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/action.js') }}"></script>
 {% endblock %}

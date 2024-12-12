@@ -35,10 +35,9 @@ body {
 }
 
 .sort-dropdown {
-    width: 150px; /* Reduce width of the dropdown menu */
+    width: 150px; 
 }
 
-/* Adjust the search bar width */
 .search-bar {
     flex-grow: 1;
     display: flex;
@@ -46,11 +45,10 @@ body {
 }
 
 .search-input {
-    flex: 1; /* Make the input take more space */
-    min-width: 100px; /* Ensure the search bar is longer */
+    flex: 1; 
+    min-width: 100px; 
 }
 
-/* Rounded Buttons with Orange Hue */
 .rounded-button {
     border-radius: 50px;
     background-color: #ff5733;
@@ -111,7 +109,7 @@ body {
     padding: 8px 12px;
     border: none;
     border-radius: 20px;
-    background-color: #007bff; /* Blue for "View Details" */
+    background-color: #007bff; 
     color: white;
     font-size: 0.9rem;
     font-weight: bold;
@@ -143,7 +141,7 @@ body {
     padding: 8px 12px;
     border: none;
     border-radius: 20px;
-    background-color: #28a745; /* Green for "Save/Unsave" */
+    background-color: #28a745; 
     color: white;
     font-size: 0.9rem;
     font-weight: bold;
