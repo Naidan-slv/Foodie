@@ -1,5 +1,7 @@
 # Foodie
-Social Media app used to share recipes across different users whilst being hosted online
+Social Media app used to share recipes across different users whilst being hosted online : 
+https://salvnaidan.pythonanywhere.com/
+
 
 # Technologies used :
 - HTML,CSS,Jinja
@@ -12,6 +14,7 @@ Social Media app used to share recipes across different users whilst being hoste
 - Verify Logins and ensure theres no duplicate users
 - Allow the user to save recipes and view it in their profile
 - Track the recipes saved and posted by the user
+- Comments can be written on posts which will be unique to each post and mentions who wrote said comment
 
 # References For Images Used
 
